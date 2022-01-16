@@ -1,0 +1,1 @@
+This example demonstrates using the "ItemCounts" and "LocationCounts" formats to create groups which only slightly deviate from the definitions found in randomizer's pools.json.

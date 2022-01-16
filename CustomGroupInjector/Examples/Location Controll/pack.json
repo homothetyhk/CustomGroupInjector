@@ -1,0 +1,17 @@
+{
+  "Name": "Location Controll",
+  "Files": [
+    {
+      "FileName": "locations.json",
+      "JsonType": "LocationWeights"
+    }
+  ],
+  "GroupNames": [
+    "Grub Rewards",
+    "Essence Rewards",
+    "Egg Rewards",
+    "Charm Rewards",
+    "Junk Pit Chests",
+    "Elite Four"
+  ]
+}

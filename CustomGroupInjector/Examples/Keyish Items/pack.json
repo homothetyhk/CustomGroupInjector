@@ -1,0 +1,18 @@
+{
+  "Name": "Keyish Items",
+  "Files": [
+    {
+      "FileName": "items.json",
+      "JsonType": "ItemCounts"
+    },
+    {
+      "FileName": "locations.json",
+      "JsonType": "LocationCounts"
+    }
+  ],
+  "GroupNames": [
+    "Keyish",
+    "Unkeyish Skills",
+    "Unkeyish Charms"
+  ]
+}

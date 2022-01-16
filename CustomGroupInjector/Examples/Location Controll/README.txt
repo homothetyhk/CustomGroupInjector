@@ -1,0 +1,1 @@
+This example demonstrates how the "LocationWeights" format can be used with very large weights to take nearly exclusive control over the weighted group of a location.
