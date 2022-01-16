@@ -21,6 +21,7 @@ namespace CustomGroupInjector
             RandomizerMod.Menu.RandomizerMenuAPI.AddMenuPage(MenuHolder.ConstructMenu, MenuHolder.TryGetMenuButton);
             RequestBuilder.OnUpdate.Subscribe(-500f, ApplyActiveGroups);
             LoadFiles();
+            RandomizerMod.Logging.SettingsLog.AfterLogSettings += LogSettings;
         }
 
         public override string GetVersion()
@@ -166,6 +167,14 @@ namespace CustomGroupInjector
                 return false;
             }
             rb.OnGetGroupFor.Subscribe(-1f, TryGetSplitGroup);
+        }
+
+        private static void LogSettings(RandomizerMod.Logging.LogArguments arg1, TextWriter tw)
+        {
+            tw.WriteLine("Logging CustomGroupInjector settings:");
+            using JsonTextWriter jtw = new(tw) { CloseOutput = false, };
+            RandomizerMod.RandomizerData.JsonUtil._js.Serialize(jtw, GS);
+            tw.WriteLine();
         }
 
         void IGlobalSettings<GlobalSettings>.OnLoadGlobal(GlobalSettings s)
