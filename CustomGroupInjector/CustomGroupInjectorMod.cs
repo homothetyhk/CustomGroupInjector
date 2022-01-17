@@ -70,7 +70,11 @@ namespace CustomGroupInjector
             {
                 if (GS.RandomizedPacks.Contains(pack.Name))
                 {
-                    foreach (string s in pack.GroupNames) GS.GroupSettings[s] = rb.rng.Next(3);
+                    foreach (string s in pack.GroupNames)
+                    {
+                        if (GS.GroupSettings.TryGetValue(s, out int setting) && (setting < 0 || setting > 2)) continue;
+                        GS.GroupSettings[s] = rb.rng.Next(3);
+                    }
                 }
 
                 foreach (string s in pack.GroupNames)
