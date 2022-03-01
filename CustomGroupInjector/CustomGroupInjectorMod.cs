@@ -26,7 +26,7 @@ namespace CustomGroupInjector
 
         public override string GetVersion()
         {
-            return "1.0.0";
+            return "1.0.1";
         }
 
         public static void LoadFiles()
@@ -136,11 +136,13 @@ namespace CustomGroupInjector
             Dictionary<string, CDFWeightedArray<ItemGroupBuilder>> itemGroups = new();
             foreach (KeyValuePair<string, Dictionary<int, double>> kvp in itemWeights)
             {
+                if (kvp.Value.Count == 0) continue; // empty weight dicts can be introduced if a customgrouppack with a file in the weight format has all groups disabled
                 itemGroups.Add(kvp.Key, ToCDF(kvp.Value));
             }
             Dictionary<string, CDFWeightedArray<ItemGroupBuilder>> locationGroups = new();
             foreach (var kvp in locationWeights)
             {
+                if (kvp.Value.Count == 0) continue;
                 locationGroups.Add(kvp.Key, ToCDF(kvp.Value));
             }
 
@@ -177,7 +179,7 @@ namespace CustomGroupInjector
         {
             tw.WriteLine("Logging CustomGroupInjector settings:");
             using JsonTextWriter jtw = new(tw) { CloseOutput = false, };
-            RandomizerMod.RandomizerData.JsonUtil._js.Serialize(jtw, GS);
+            RandomizerMod.RandomizerData.JsonUtil._js.Serialize(jtw, GS.GetDisplayableSettings());
             tw.WriteLine();
         }
 
