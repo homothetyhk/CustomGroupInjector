@@ -4,10 +4,13 @@
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>CustomGroupInjector</RootNamespace>
     <AssemblyName>CustomGroupInjector</AssemblyName>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
     <ImplicitUsings>true</ImplicitUsings>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Using Remove="System.Net.Http" />
@@ -17,6 +20,9 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="RandomizerCore">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Mods\RandomizerCore\RandomizerCore.dll</HintPath>

@@ -15,22 +15,29 @@ namespace CustomGroupInjector
         public static GlobalSettings GS { get; private set; } = new();
         public static readonly List<CustomGroupPack> Packs = new();
 
+        public CustomGroupInjectorMod()
+        {
+            LoadFiles();
+        }
+        
         public override void Initialize()
         {
             MenuChangerMod.OnExitMainMenu += MenuHolder.OnExitMenu;
             RandomizerMod.Menu.RandomizerMenuAPI.AddMenuPage(MenuHolder.ConstructMenu, MenuHolder.TryGetMenuButton);
             RequestBuilder.OnUpdate.Subscribe(-500f, ApplyActiveGroups);
-            LoadFiles();
             RandomizerMod.Logging.SettingsLog.AfterLogSettings += LogSettings;
+            SettingsInterop.Setup(this);
         }
 
         public override string GetVersion()
         {
-            return "1.0.1";
+            Version v = GetType().Assembly.GetName().Version;
+            return $"{v.Major}.{v.Minor}.{v.Build}";
         }
 
         public static void LoadFiles()
         {
+            Packs.Clear();
             DirectoryInfo main = new(ModDirectory);
 
             foreach (DirectoryInfo di in main.EnumerateDirectories())
@@ -42,17 +49,18 @@ namespace CustomGroupInjector
                     {
                         using StreamReader sr = new(fi.OpenRead());
                         using JsonTextReader jtr = new(sr);
-                        CustomGroupPack pack = JsonUtil.Deserialize<CustomGroupPack>(jtr);
-                        foreach (CustomGroupFile cgf in pack.Files) cgf.directoryName = di.Name;
+                        CustomGroupPack pack = JsonUtil.Deserialize<LocalCustomGroupPack>(jtr);
+                        foreach (CustomGroupFile cgf in ((LocalCustomGroupPack)pack).Files) cgf.directoryName = di.Name;
                         Packs.Add(pack);
                     }
                     catch (Exception e)
                     {
-                        LogHelper.LogError($"Error deserializing pack.json in subdirectory {di.Name}:\n{e}");
+                        throw new InvalidOperationException($"Error deserializing pack.json in subdirectory {di.Name}", e);
                     }
                 }
             }
             Packs.Sort((p, q) => p.Name.CompareTo(q.Name));
+            GS.CleanData();
         }
 
         public static void ApplyActiveGroups(RequestBuilder rb)
@@ -68,18 +76,19 @@ namespace CustomGroupInjector
             }
             foreach (CustomGroupPack pack in Packs)
             {
-                if (GS.RandomizedPacks.Contains(pack.Name))
+                if (GS.IsPackRandomized(pack.Name))
                 {
-                    foreach (string s in pack.GroupNames)
+                    foreach (string s in pack.GetGroupNames())
                     {
-                        if (GS.GroupSettings.TryGetValue(s, out int setting) && (setting < 0 || setting > 2)) continue;
-                        GS.GroupSettings[s] = rb.rng.Next(3);
+                        if (!GS.IsGroupRandomizable(s)) continue;
+                        GS.SetGroupSetting(s, rb.rng.Next(3));
                     }
                 }
 
-                foreach (string s in pack.GroupNames)
+                foreach (string s in pack.GetGroupNames())
                 {
-                    if (GS.GroupSettings.TryGetValue(s, out int splitID) && splitID > 0 && !splitGroups.ContainsKey(splitID))
+                    int splitID = GS.GetGroupSetting(s);
+                    if (splitID > 0 && !splitGroups.ContainsKey(splitID))
                     {
                         splitGroups[splitID] = rb.MainItemStage.AddItemGroup(RBConsts.SplitGroupPrefix + splitID);
                     }
@@ -90,7 +99,7 @@ namespace CustomGroupInjector
             Dictionary<string, Dictionary<int, double>> locationWeights = new();
             foreach (CustomGroupPack pack in Packs)
             {
-                foreach (CustomGroupFile cgf in pack.Files) cgf.LoadIntoSplitGroups(itemWeights, locationWeights);
+                pack.LoadIntoSplitGroups(itemWeights, locationWeights);
             }
             foreach (PoolDef def in Data.Pools)
             {

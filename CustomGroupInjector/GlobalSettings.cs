@@ -1,21 +1,64 @@
-﻿namespace CustomGroupInjector
+﻿using Newtonsoft.Json;
+
+namespace CustomGroupInjector
 {
     public class GlobalSettings 
     {
+        public bool IsActive() => GroupSettings.Values.Any(g => g >= 0);
+
         public HashSet<string> RandomizedPacks = new();
         public Dictionary<string, int> GroupSettings = new();
 
+        public void SetPackRandomization(string name, bool value)
+        {
+            if (value)
+            {
+                RandomizedPacks.Add(name);
+            }
+            else
+            {
+                RandomizedPacks.Remove(name);
+            }
+        }
+
+        public int GetGroupSetting(string name)
+        {
+            if (!GroupSettings.TryGetValue(name, out int value))
+            {
+                GroupSettings.Add(name, value = -1);
+            }
+            return value;
+        }
+
+        public void SetGroupSetting(string name, int value)
+        {
+            GroupSettings[name] = value;
+        }
+
+        public bool IsGroupEnabled(string group) => GroupSettings.TryGetValue(group, out int value) && value >= 0;
+        public bool IsGroupRandomizable(string group) => GroupSettings.TryGetValue(group, out int value) && 0 <= value && value <= 2;
+        public bool IsPackRandomized(string pack) => RandomizedPacks.Contains(pack);
+        public bool IsPackEnabled(CustomGroupPack pack) => pack.GetGroupNames().Any(IsGroupEnabled);
+
+        public void CleanData()
+        {
+            RandomizedPacks.IntersectWith(CustomGroupInjectorMod.Packs.Select(p => p.Name));
+            HashSet<string> illegalKeys = new(GroupSettings.Keys);
+            illegalKeys.ExceptWith(CustomGroupInjectorMod.Packs.SelectMany(p => p.GetGroupNames()));
+            foreach (string s in illegalKeys) GroupSettings.Remove(s);
+        }
+
         public GlobalSettings GetDisplayableSettings()
         {
-            Dictionary<string, CustomGroupPack> packs = CustomGroupInjectorMod.Packs.ToDictionary(p => p.Name);
-            HashSet<string> randomizedPacks = new(RandomizedPacks.Where(p => packs.ContainsKey(p)));
+            HashSet<string> randomizedPacks = new();
             Dictionary<string, int> groupSettings = new();
-            foreach (CustomGroupPack pack in packs.Values)
+            foreach (CustomGroupPack pack in CustomGroupInjectorMod.Packs.Where(IsPackEnabled))
             {
-                foreach (string s in pack.GroupNames)
+                foreach (string s in pack.GetGroupNames())
                 {
                     if (GroupSettings.TryGetValue(s, out int value)) groupSettings[s] = value;
                 }
+                if (RandomizedPacks.Contains(pack.Name)) randomizedPacks.Add(pack.Name);
             }
             return new() { RandomizedPacks = randomizedPacks, GroupSettings = groupSettings };
         }
