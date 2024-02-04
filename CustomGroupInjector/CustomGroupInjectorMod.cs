@@ -1,7 +1,6 @@
 ﻿using MenuChanger;
 using Modding;
 using Newtonsoft.Json;
-using RandomizerMod;
 using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
 using static RandomizerMod.RC.RequestBuilder;
@@ -13,7 +12,7 @@ namespace CustomGroupInjector
     {
         public static string ModDirectory { get; }
         public static GlobalSettings GS { get; private set; } = new();
-        public static readonly List<CustomGroupPack> Packs = new();
+        public static readonly List<CustomGroupPack> Packs = [];
 
         public CustomGroupInjectorMod()
         {
@@ -47,9 +46,7 @@ namespace CustomGroupInjector
                 {
                     try
                     {
-                        using StreamReader sr = new(fi.OpenRead());
-                        using JsonTextReader jtr = new(sr);
-                        CustomGroupPack pack = JsonUtil.Deserialize<LocalCustomGroupPack>(jtr);
+                        CustomGroupPack pack = JsonUtil.DeserializeFromStream<LocalCustomGroupPack>(fi.OpenRead());
                         foreach (CustomGroupFile cgf in ((LocalCustomGroupPack)pack).Files) cgf.directoryName = di.Name;
                         Packs.Add(pack);
                     }
@@ -95,8 +92,8 @@ namespace CustomGroupInjector
                 }
             }
 
-            Dictionary<string, Dictionary<int, double>> itemWeights = new();
-            Dictionary<string, Dictionary<int, double>> locationWeights = new();
+            Dictionary<string, Dictionary<int, double>> itemWeights = [];
+            Dictionary<string, Dictionary<int, double>> locationWeights = [];
             foreach (CustomGroupPack pack in Packs)
             {
                 pack.LoadIntoSplitGroups(itemWeights, locationWeights);
@@ -111,13 +108,13 @@ namespace CustomGroupInjector
                     }
                     foreach (string s in def.IncludeItems)
                     {
-                        if (!itemWeights.TryGetValue(s, out Dictionary<int, double> groupWeights)) itemWeights.Add(s, groupWeights = new());
+                        if (!itemWeights.TryGetValue(s, out Dictionary<int, double> groupWeights)) itemWeights.Add(s, groupWeights = []);
                         groupWeights.TryGetValue(splitID, out double weight);
                         groupWeights[splitID] = weight + 1.0;
                     }
                     foreach (string s in def.IncludeLocations)
                     {
-                        if (!locationWeights.TryGetValue(s, out Dictionary<int, double> groupWeights)) locationWeights.Add(s, groupWeights = new());
+                        if (!locationWeights.TryGetValue(s, out Dictionary<int, double> groupWeights)) locationWeights.Add(s, groupWeights = []);
                         groupWeights.TryGetValue(splitID, out double weight);
                         groupWeights[splitID] = weight + 1.0;
                     }
@@ -142,13 +139,13 @@ namespace CustomGroupInjector
                 return new(values, cdf);
             }
 
-            Dictionary<string, CDFWeightedArray<ItemGroupBuilder>> itemGroups = new();
+            Dictionary<string, CDFWeightedArray<ItemGroupBuilder>> itemGroups = [];
             foreach (KeyValuePair<string, Dictionary<int, double>> kvp in itemWeights)
             {
                 if (kvp.Value.Count == 0) continue; // empty weight dicts can be introduced if a customgrouppack with a file in the weight format has all groups disabled
                 itemGroups.Add(kvp.Key, ToCDF(kvp.Value));
             }
-            Dictionary<string, CDFWeightedArray<ItemGroupBuilder>> locationGroups = new();
+            Dictionary<string, CDFWeightedArray<ItemGroupBuilder>> locationGroups = [];
             foreach (var kvp in locationWeights)
             {
                 if (kvp.Value.Count == 0) continue;

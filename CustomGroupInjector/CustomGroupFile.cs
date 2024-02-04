@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RandomizerCore.Json;
+﻿using RandomizerCore.Json;
 
 namespace CustomGroupInjector
 {
@@ -12,9 +11,7 @@ namespace CustomGroupInjector
         internal T Deserialize<T>() where T : class
         {
             string filePath = Path.Combine(CustomGroupInjectorMod.ModDirectory, directoryName, FileName);
-            using StreamReader sr = new(File.OpenRead(filePath));
-            using JsonTextReader jtr = new(sr);
-            return JsonUtil.Deserialize<T>(jtr);
+            return JsonUtil.DeserializeFromFile<T>(filePath);
         }
     }
 }

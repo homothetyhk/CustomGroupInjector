@@ -20,7 +20,7 @@
                 {
                     if (!receiver.TryGetValue(item, out Dictionary<int, double> groupWeights))
                     {
-                        receiver.Add(item, groupWeights = new());
+                        receiver.Add(item, groupWeights = []);
                     }
                     groupWeights.TryGetValue(splitID, out double weight);
                     weight += 1.0;
@@ -35,7 +35,7 @@
             {
                 if (!receiver.TryGetValue(kvp.Key, out Dictionary<int, double> groupWeights))
                 {
-                    receiver[kvp.Key] = groupWeights = new();
+                    receiver[kvp.Key] = groupWeights = [];
                 }
                 foreach (KeyValuePair<string, double> wp in kvp.Value)
                 {
@@ -90,12 +90,12 @@
 
     public class RemoteCustomGroupPack : CustomGroupPack
     {
-        public List<Dictionary<string, Dictionary<string, double>>> ItemWeightFiles = new();
-        public List<Dictionary<string, Dictionary<string, double>>> LocationWeightFiles = new();
-        public List<Dictionary<string, List<string>>> ItemCountFiles = new();
-        public List<Dictionary<string, List<string>>> LocationCountFiles = new();
+        public List<Dictionary<string, Dictionary<string, double>>> ItemWeightFiles = [];
+        public List<Dictionary<string, Dictionary<string, double>>> LocationWeightFiles = [];
+        public List<Dictionary<string, List<string>>> ItemCountFiles = [];
+        public List<Dictionary<string, List<string>>> LocationCountFiles = [];
         public List<string> GroupNames;
-        public List<(string, JsonType, int)> Files = new();
+        public List<(string, JsonType, int)> Files = [];
 
         public RemoteCustomGroupPack() { }
 

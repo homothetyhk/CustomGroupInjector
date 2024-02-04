@@ -6,8 +6,8 @@ namespace CustomGroupInjector
     {
         public bool IsActive() => GroupSettings.Values.Any(g => g >= 0);
 
-        public HashSet<string> RandomizedPacks = new();
-        public Dictionary<string, int> GroupSettings = new();
+        public HashSet<string> RandomizedPacks = [];
+        public Dictionary<string, int> GroupSettings = [];
 
         public void SetPackRandomization(string name, bool value)
         {
@@ -50,8 +50,8 @@ namespace CustomGroupInjector
 
         public GlobalSettings GetDisplayableSettings()
         {
-            HashSet<string> randomizedPacks = new();
-            Dictionary<string, int> groupSettings = new();
+            HashSet<string> randomizedPacks = [];
+            Dictionary<string, int> groupSettings = [];
             foreach (CustomGroupPack pack in CustomGroupInjectorMod.Packs.Where(IsPackEnabled))
             {
                 foreach (string s in pack.GetGroupNames())

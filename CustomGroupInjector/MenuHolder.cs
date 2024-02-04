@@ -15,8 +15,8 @@ namespace CustomGroupInjector
         public SmallButton JumpButton;
         public MultiGridItemPanel Panel;
         public OrderedItemViewer SettingsViewer;
-        public Dictionary<string, ToggleButton> PackRandoToggleLookup = new();
-        public Dictionary<string, NumericEntryField<int>> GroupFieldLookup = new();
+        public Dictionary<string, ToggleButton> PackRandoToggleLookup = [];
+        public Dictionary<string, NumericEntryField<int>> GroupFieldLookup = [];
         public SmallButton? RestoreLocalPacks;
 
         public static void OnExitMenu()
@@ -54,8 +54,8 @@ namespace CustomGroupInjector
             JumpButton.AddHideAndShowEvent(MainPage);
             PackRandoToggleLookup.Clear();
             GroupFieldLookup.Clear();
-            List<Subpage> subpages = new();
-            List<SmallButton> pageButtons = new();
+            List<Subpage> subpages = [];
+            List<SmallButton> pageButtons = [];
             foreach (CustomGroupPack pack in CustomGroupInjectorMod.Packs) CreatePackSubpage(pack, subpages, pageButtons);
             Panel = new(MainPage, 5, 3, 60f, 650f, new(0, 300), pageButtons.ToArray());
             SettingsViewer = new(SettingsPage, subpages.ToArray());
@@ -85,7 +85,7 @@ namespace CustomGroupInjector
         public void CreatePackSubpage(CustomGroupPack pack, List<Subpage> subpages, List<SmallButton> pageButtons)
         {
             Subpage page = new(SettingsPage, pack.Name);
-            List<IMenuElement> pageElements = new();
+            List<IMenuElement> pageElements = [];
             
             ToggleButton randomize = new(SettingsPage, "Randomize On Start");
             randomize.ValueChanged += b =>
